@@ -1,6 +1,3 @@
-from math import ceil, modf
-from decimal import Decimal
-
 def only_alternating_signs(lista_posibila_semn_alt):
     """
     Functia verifica daca lista are doar termeni la care le alterneaza semnul
@@ -92,48 +89,23 @@ def test_get_longest_prime_digits():
     assert get_longest_prime_digits([2]) == [2]
 
 
-def citire_lista_intregi():
-    lista = []
-    dimensiune = int(input("Introduceti dimensiunea listei: "))
-    while dimensiune:
-        element = int(input("Introduceti elementul listei: "))
-        lista.append(element)
-        dimensiune -= 1
-    return lista
-
-
-def numar_cifre(numar):
+def verificare_fractional_egal_intreg(numar):
     """
-    Obtine numarul de cifre ale unui numar
-    :param numar: int
-    :return: int ~ numarul de cifre
-    """
-    nr_cifre = 0
-    while numar:
-        nr_cifre += 1
-        numar //= 10
-    return nr_cifre
-
-
-def parte_fractionala(numar):
-    """
-    Obtine partea fractionala si o transforma intr-un numar intreg cu acelasi numar de cifre ca si partea intreaga
+    Verifica daca partea intreaga a unui numar este egala cu partea fractionala
     :param numar: float
-    :return: int ~ partea fractionala ca numar intreg
+    :return: bool ~ True daca intreg = fractional, False in caz contrar
     """
     if numar < 0:
         numar *= -1
-    nr_cifre = numar_cifre(int(numar))
-    fractional = numar - int(numar)
-    fractional = Decimal(fractional)
-    fractional = round(fractional, nr_cifre)
-    fractional = int(fractional * 10 ** nr_cifre)
-    return fractional
+    parte_intreaga, parte_fractionala = str(float(numar)).split('.', 1)
+    if parte_intreaga != parte_fractionala:
+        return False
+    return True
 
 
 def only_fractional_integer_part(lista_posibila_int_equals_fract):
     for element in lista_posibila_int_equals_fract:
-        if abs(int(element)) != parte_fractionala(element):
+        if not verificare_fractional_egal_intreg(element):
             return False
     return True
 
@@ -160,7 +132,7 @@ def test_get_longest_equal_int_real():
     assert get_longest_equal_int_real([21.12, 433.433, -12.12, -13.13, 1.45]) == [433.433, -12.12, -13.13]
 
 
-def citire_lista_reale():
+def citire_lista():
     lista = []
     dimensiune = int(input("Introduceti dimensiunea listei: "))
     while dimensiune:
@@ -170,25 +142,29 @@ def citire_lista_reale():
     return lista
 
 
+def conversie_float_to_int(lista):
+    lista_int = []
+    for i in lista:
+        lista_int.append(int(i))
+    return lista_int
+
+
 def main():
     lista = []
     while True:
         print("""
 1. Citire date
-        1.1 Numere intregi
-        1.2 Numere reale
-2. Determinare cea mai lunga subsecventa cu proprietatea 1(integers only)
-3. Determinare cea mai lunga subsecventa cu prorpietatea 2(integers only)
-4. Determinare cea mai lunga subsecventa cu proprietatea 3(float)
+2. Determinare cea mai lunga subsecventa cu proprietatea 1
+3. Determinare cea mai lunga subsecventa cu prorpietatea 2
+4. Determinare cea mai lunga subsecventa cu proprietatea 3
 5. Iesire""")
         command = input("Introduceti comanda: ")
         if command == '5':
             break
-        elif command == '1.1':
-                lista = citire_lista_intregi()
-        elif command == "1.2":
-                lista = citire_lista_reale()
+        elif command == '1':
+            lista = citire_lista()
         elif command == '2':
+            lista = conversie_float_to_int(lista)
             if len(lista) < 2:
                 print("Lista nu este indeajuns de mare")
             else:
@@ -198,6 +174,7 @@ def main():
                 else:
                     print(lista_semne_alternante)
         elif command == '3':
+            lista = conversie_float_to_int(lista)
             lista_nr_cifre_prime = get_longest_prime_digits(lista)
             if not lista_nr_cifre_prime:
                 print("NU exista numere ale caror cifre sa fie doar prime")
@@ -205,11 +182,14 @@ def main():
                 print(lista_nr_cifre_prime)
         elif command == '4':
             lista_nr_int_equals_fract = get_longest_equal_int_real(lista)
-            print(lista_nr_int_equals_fract)
+            if not lista_nr_int_equals_fract:
+                print("NU exista numere ale caror parte fractionala sa fie egala cu partea intreaga")
+            else:
+                print(lista_nr_int_equals_fract)
         elif command == '5':
             break
         else:
-            print("Comanda invalida!!!")
+            print("Comanda invalida!")
 
 
 test_get_longest_alternating_signs()
